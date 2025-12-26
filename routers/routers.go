@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"url-shortener/models"
-	"url-shortener/utils"
+	"github.com/K31NER/url-shortener/models"
+	"github.com/K31NER/url-shortener/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"

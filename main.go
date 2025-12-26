@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	"url-shortener/db"
-	"url-shortener/models"
-	"url-shortener/routers"
+	"github.com/K31NER/url-shortener/db"
+	"github.com/K31NER/url-shortener/models"
+	"github.com/K31NER/url-shortener/routers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"

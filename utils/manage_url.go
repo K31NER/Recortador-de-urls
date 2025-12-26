@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"url-shortener/models"
+	"github.com/K31NER/url-shortener/models"
 
 	"go.osspkg.com/x/algorithms/encoding/base62"
 	"gorm.io/gorm"
