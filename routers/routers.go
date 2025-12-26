@@ -27,6 +27,10 @@ func SetupRoutes(app *fiber.App, conn *gorm.DB) {
 		return addUrlHandler(c,conn)
 	})
 
+	app.Put("/api/v1/:id", func (c *fiber.Ctx) error {
+		return updateUrls(c,conn)
+	})
+
 	app.Delete("/api/v1/:id", func (c *fiber.Ctx) error {
         return deleteUrls(c,conn)
 	})
@@ -113,7 +117,7 @@ func readUrls(c *fiber.Ctx, db *gorm.DB) error{
     
 	// Obtenemos los registros de la base de datos
 	urls, err := utils.ReadAllUrls(db)
-
+    
 	// Verificamos que no tenga error
 	if err != nil{
             return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -124,6 +128,7 @@ func readUrls(c *fiber.Ctx, db *gorm.DB) error{
 	return c.Status(fiber.StatusOK).JSON(urls)
 }
 
+// Borra las urls por su id
 func deleteUrls(c *fiber.Ctx, db *gorm.DB) error{
     
 	// Convertimos a entero
@@ -144,4 +149,43 @@ func deleteUrls(c *fiber.Ctx, db *gorm.DB) error{
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message":"url eliminada con exito",
 	})
+}   
+
+// Actualiza las urls por su id
+func updateUrls(c *fiber.Ctx, db *gorm.DB) error{
+    // Definimos el body que esperamos
+	var body models.JsonURLInfo
+    
+    // Convertimos a entero el id
+	id, err := strconv.ParseInt(c.Params("id"),10,64)
+	if err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "El id de ser solo enteros",})
+	}
+    
+    // Validamos si hubo un error de parseo
+	if err := c.BodyParser(&body); err != nil {
+        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error":"Json invalido",
+		})
+	}
+    
+	// Validamos los campos y su estructura
+	if err := validate.Struct(body); err != nil{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	
+	// actualizamos
+	result, err := utils.UpdateUrl(body.OriginalURL, id, db)
+
+	if err != nil{
+        return  c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "No se logro actualizar la url",
+			"details": err,
+		})
+	}
+
+    return c.Status(fiber.StatusOK).JSON(result)
 }
