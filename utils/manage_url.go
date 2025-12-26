@@ -79,3 +79,24 @@ func DeleteUrl(id int64, db *gorm.DB) error {
 
 	return  nil
 }
+
+// actualiza la url base
+func UpdateUrl(new_url string, id int64, db *gorm.DB) (models.URLTable,error) {
+    var url models.URLTable
+
+	// Actualizamos la informacion
+	result := db.Model(&models.URLTable{}).Where("id = ?",id).Update("original_url",new_url)
+
+	if result.Error != nil{
+        return models.URLTable{} , result.Error
+	}
+
+	if result.RowsAffected == 0{
+		return models.URLTable{}, gorm.ErrRecordNotFound
+	}
+    
+	// Buscamos el objeto
+	err := db.First(&url,id).Error
+
+	return url, err
+}
